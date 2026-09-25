@@ -1,0 +1,30 @@
+name: Build ZianOBS
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.2.1'
+      - name: Build
+        run: gradle --no-daemon build
+      - name: Upload ZianOBS JAR
+        uses: actions/upload-artifact@v6
+        with:
+          name: zianobs-neoforge-1.21.1
+          path: build/libs/*.jar
+          if-no-files-found: error
