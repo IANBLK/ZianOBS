@@ -38,7 +38,10 @@ public final class ZianSpawnObserver {
     private void subscribe() {
         CobblemonEvents.ENTITY_SPAWN.subscribe(Priority.LOWEST, (Consumer<SpawnEvent<?>>) this::onEntitySpawn);
         CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.LOWEST, (Consumer<SpawnEvent<PokemonEntity>>) this::onPokemonEntitySpawn);
-        CobblemonEvents.BOBBER_SPAWN_POKEMON_PRE.subscribe(Priority.LOWEST, (Consumer<BobberSpawnPokemonEvent.Pre>) this::onFishingPre);
+        // Observe fishing before generation guards can cancel the PRE event. Cobblemon's
+        // cancelable observable may stop propagation after cancellation, so LOWEST can miss
+        // exactly the denied attempt we are trying to diagnose.
+        CobblemonEvents.BOBBER_SPAWN_POKEMON_PRE.subscribe(Priority.HIGHEST, (Consumer<BobberSpawnPokemonEvent.Pre>) this::onFishingPre);
         CobblemonEvents.BOBBER_SPAWN_POKEMON_POST.subscribe(Priority.LOWEST, (Consumer<BobberSpawnPokemonEvent.Post>) this::onFishingPost);
         CobblemonEvents.POKE_SNACK_SPAWN_POKEMON_PRE.subscribe(Priority.LOWEST, (Consumer<PokeSnackSpawnPokemonEvent.Pre>) this::onPokeSnackPre);
         CobblemonEvents.POKE_SNACK_SPAWN_POKEMON_POST.subscribe(Priority.LOWEST, (Consumer<PokeSnackSpawnPokemonEvent.Post>) this::onPokeSnackPost);
